@@ -9,7 +9,7 @@ export default function TypingHeader() {
 
   useEffect(() => {
     const phrases = [
-      "Ready to tackle your next assessment?",
+      "Ready to tackle your next project?",
       "Prepare with confidence.",
       "Crack every test like a pro!",
       "What's on the agenda today?",

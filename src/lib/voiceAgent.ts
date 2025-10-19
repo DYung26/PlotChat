@@ -4,8 +4,8 @@ import { RealtimeAgent, RealtimeSession } from "@openai/agents-realtime";
 
 export async function setupVoiceAgent(ephemeralKey: string) {
   const agent = new RealtimeAgent({
-    name: "Assessly Assistant",
-    instructions: "You are a helpful voice assistant that helps users with their assessments.",
+    name: "PlotChat Assistant",
+    instructions: "You are a helpful voice assistant that helps users with their projects.",
   });
 
   const session = new RealtimeSession(agent);
@@ -17,7 +17,7 @@ export async function setupVoiceAgent(ephemeralKey: string) {
 
     console.log("Connected to Realtime Voice Agent via WebRTC");
 
-    session.sendMessage("Say a warm greeting to the user and ask how their assessment is going.");
+    session.sendMessage("Say a warm greeting to the user and ask how their project is going.");
 
     return session;
   } catch (err) {

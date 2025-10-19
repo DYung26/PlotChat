@@ -7,7 +7,7 @@ export type User = {
 
 export type Message = {
   id: string;
-  assessment_id?: string;
+  project_id?: string;
   chat_id?: string;
   file_ids?: string[];
   instructions?: string;
@@ -18,13 +18,13 @@ export type Message = {
 
 export type Chat = {
   id: string;
-  assessment_id?: string;
+  project_id?: string;
   title: string;
   initial_message?: string;
   created_at: string;
 }
 
-export type Assessment = {
+export type Project = {
   id: string;
   user_id: string;
   title: string;

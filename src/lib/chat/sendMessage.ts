@@ -4,7 +4,7 @@ import { mutationFn } from "@/lib/mutationFn";
 
 type SendMessageArgs = {
   chatId?: string;
-  assessmentId?: string;
+  projectId?: string;
   userText: string;
   instructions?: string[];
   files: File[];
@@ -18,7 +18,7 @@ type SendMessageArgs = {
 
 export async function sendMessage({
   chatId,
-  // assessmentId,
+  // projectId,
   userText,
   instructions,
   files,
@@ -64,7 +64,7 @@ export async function sendMessage({
     await mutationFn({
       url: "/message",
       body: {
-        // assessment_id: assessmentId ?? null,
+        // project_id: projectId ?? null,
         chat_id: chatId,
         file_ids: fileIds ?? [],
         content: userText,

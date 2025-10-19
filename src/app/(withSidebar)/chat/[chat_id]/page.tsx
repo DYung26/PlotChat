@@ -18,7 +18,7 @@ type PageProps = {
 export default function Chat({ params }: PageProps) {
   const { chat_id: chatId } = use(params);
   const searchParams = useSearchParams();
-  const assessmentId = searchParams.get("id") as string;
+  const projectId = searchParams.get("id") as string;
 
   // const messages = useMessageStore((s) => s.messagesByChatId[chatId] ?? []);
   const { data: initialMsgs = [] } = useMessages(chatId);
@@ -50,7 +50,7 @@ export default function Chat({ params }: PageProps) {
     (userText: string, files: File[], instructions: string[] = []) => {
       sendMessage({
         chatId,
-        assessmentId,
+        projectId,
         userText,
         instructions,
         files,
@@ -78,7 +78,7 @@ export default function Chat({ params }: PageProps) {
         },
       });
     },
-    [chatId, assessmentId, uploadFileMutation, router]
+    [chatId, projectId, uploadFileMutation, router]
   );
 
   useEffect(() => {

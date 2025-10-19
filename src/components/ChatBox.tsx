@@ -1,6 +1,6 @@
 "use client";
 
-import { AudioLines, Check, Mic, Paperclip, Send, X } from "lucide-react";
+import { AudioLines, Check, Mic, Paperclip, Plus, Send, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useRef, useState } from "react";
@@ -10,6 +10,7 @@ import { ChatPromptBoxProps } from "@/types";
 import dynamic from "next/dynamic";
 import { mutationFn } from "@/lib/mutationFn";
 import { VoiceAgentDialog } from "./VoiceAgentPopover";
+import { useParams } from "next/navigation";
 
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
   ssr: false,
@@ -20,6 +21,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [voiceAgentOpen, setVoiceAgentOpen] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -27,7 +29,36 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const streamRef = useRef<MediaStream | null>(null);
   const isCancelRef = useRef(false);
 
+  const extensions = [
+    "Recommender",
+    "PlotGen",
+    "Explainer",
+  ];
+
+  const { project_id } = useParams();
+  const isDisabled = !project_id;
+
+  const handleClick = (e: React.MouseEvent, extension: string) => {
+    if (isDisabled) {
+      e.preventDefault();
+      handleSend();
+      return;
+    }
+    toggleItem(extension)
+  };
+
+  const toggleItem = (item: string) => {
+    setSelected((prev) =>
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+    );
+  };
+
   const startRecording = async () => {
+    if (isDisabled) {
+      // e.preventDefault();
+      handleSend();
+      return;
+    }
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     streamRef.current = stream;
     const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
@@ -136,6 +167,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
   const handleSend = async () => {
     // if (!message.trim()) return;
+    // message + selected.map(ext => `\n_- Use the ${ext} extension _`).join('');
     action(message, files);
     setMessage("");
     setFiles([]);
@@ -202,18 +234,53 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
         }
 
         <div className="flex items-center justify-between">
-          <label className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            <Paperclip className="w-4 h-4" />
-            <span className="text-sm">Attach</span>
-            <input
-              type="file"
-              multiple
-              // accept="image/*,application/pdf"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          </label>
+          <div className="flex items-center gap-2">
+            <label
+              onClick={(e) => handleClick(e, "")}
+              className="inline-flex items-center justify-center gap-1 border px-1.5 py-1 rounded-xl transition-colors cursor-pointer"
+            >
+              <Paperclip className="w-4 h-4" />
+              <span className="text-sm">Attach</span>
+              <input
+                type="file"
+                multiple
+                // accept="image/*,application/pdf"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+
+            <div className="flex gap-2">
+              {extensions.map((extension) => {
+                const isSelected = selected.includes(extension);
+                return (
+                  <button
+                    key={extension}
+                    onClick={(e) => handleClick(e, extension)}
+                    className={`flex items-center justify-center gap-1 px-1.5 py-1 rounded-full transition cursor-pointer w-full text-left text-gray-500
+                      ${
+                        isSelected
+                          ? "bg-blue-100 border border-blue-500"
+                          : "border border-gray-300 hover:bg-gray-100"
+                      }`}
+                  >
+                    {isSelected ? (
+                      <Check className="text-blue-600" size={16} />
+                    ) : (
+                      <Plus className="text-gray-500" size={16} />
+                    )}
+                    <span
+                      className={`${
+                        isSelected ? "text-blue-600 font-medium" : "text-gray-800"
+                      } text-sm`}
+                    >
+                      {extension}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="flex gap-2 items-center">
             {!isRecording ? (
@@ -228,7 +295,14 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
                 <Button
                   size="icon"
-                  onClick={() => setVoiceAgentOpen(true)}
+                  onClick={() => {
+                    if (isDisabled) {
+                      // e.preventDefault();
+                      handleSend();
+                      return;
+                    }
+                    setVoiceAgentOpen(true)
+                  }}
                   className="p-1 rounded-full bg-gray-200 text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-300"
                 >
                   <AudioLines />
