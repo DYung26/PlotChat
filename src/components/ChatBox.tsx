@@ -168,7 +168,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const handleSend = async () => {
     // if (!message.trim()) return;
     // message + selected.map(ext => `\n_- Use the ${ext} extension _`).join('');
-    action(message, files);
+    action(message, files, selected[0]); // enabling only one extension for now
     setMessage("");
     setFiles([]);
   };

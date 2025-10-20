@@ -43,16 +43,23 @@ export default function Chat({ params }: PageProps) {
   });
 
   const pendingMessage = useChatStore(s => s.pendingMessage);
+  const pendingExtension = useChatStore(s => s.pendingExtension);
   const pendingInstructions = useChatStore(s => s.pendingInstructions);
   const pendingFiles = useChatStore(s => s.pendingFiles);
 
   const handleSend = useCallback(
-    (userText: string, files: File[], instructions: string[] = []) => {
+    (
+      userText: string,
+      files: File[],
+      extension: string = "",
+      instructions: string[] = [],
+    ) => {
       sendMessage({
         chatId,
         projectId,
         userText,
         instructions,
+        extension,
         files,
         uploadFile: (formData) => uploadFileMutation.mutateAsync({ url: "/files/upload", body: formData }).then(res => res.data),
         onUserMessage: (msg) => setMessages((prev) => [...prev, msg]),
@@ -84,12 +91,15 @@ export default function Chat({ params }: PageProps) {
   useEffect(() => {
     if (pendingMessage && !hasRunRef.current) {
       handleSend(
-        pendingMessage as string, pendingFiles as File[], pendingInstructions as string[]
+        pendingMessage as string,
+        pendingFiles as File[],
+        pendingExtension as string,
+        pendingInstructions as string[],
       );
       useChatStore.getState().clearPending();
       hasRunRef.current = true
     }
-  }, [pendingMessage, pendingFiles, pendingInstructions, handleSend]);
+  }, [pendingMessage, pendingFiles, pendingInstructions, pendingExtension, handleSend]);
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">

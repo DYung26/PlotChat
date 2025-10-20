@@ -47,7 +47,7 @@ export type FileType = {
 }
 
 export type ChatPromptBoxProps = {
-  action: (msg: string, files: File[]) => void;
+  action: (msg: string, files: File[], extension: string) => void;
 };
 
 export type ContextDockProps = {

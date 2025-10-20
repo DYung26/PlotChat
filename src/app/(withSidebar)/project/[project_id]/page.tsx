@@ -23,7 +23,10 @@ export default function Project({ params }: PageProps) {
   const { project_id } = use(params);
   const { data: chats = [] } = useProjectChats(project_id as string);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {setPendingMessage, setPendingInstructions, setPendingFiles} = useChatStore();
+  const {
+    setPendingMessage, setPendingInstructions,
+    setPendingExtension, setPendingFiles
+  } = useChatStore();
   const [instructions, setInstructions] = useState<string[]>([]);
   const [markingScheme, setMarkingScheme] = useState<File[]>([]);
   const router = useRouter();
@@ -48,7 +51,9 @@ export default function Project({ params }: PageProps) {
     // setPendingFiles(markingScheme);
   }
 
-  const handleSend = async (userText: string, files: File[]) => {
+  const handleSend = async (
+    userText: string, files: File[], extension: string
+  ) => {
     if (
       userText.trim().length === 0 &&
       instructions.length === 0
@@ -71,6 +76,7 @@ export default function Project({ params }: PageProps) {
     });
     setPendingMessage(initialMessage);
     setPendingInstructions(instructions);
+    setPendingExtension(extension);
     setPendingFiles(files);
   }
 
