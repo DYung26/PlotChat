@@ -35,8 +35,8 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
     "Explainer",
   ];
 
-  const { project_id } = useParams();
-  const isDisabled = !project_id;
+  const { project_id, chat_id } = useParams();
+  const isDisabled = !project_id || !chat_id;
 
   const handleClick = (e: React.MouseEvent, extension: string) => {
     if (isDisabled) {
